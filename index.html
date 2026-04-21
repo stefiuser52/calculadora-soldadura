@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Soldadura</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .card { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { color: #333; text-align: center; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; margin-top: 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-calc { background-color: #007bff; color: white; }
+        .btn-ws { background-color: #25d366; color: white; display: none; margin-top: 10px; }
+        .res { margin-top: 20px; font-size: 1.2em; text-align: center; color: #28a745; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Presupuesto Soldadura</h2>
+    
+    <label>Metros de material (caños/perfil):</label>
+    <input type="number" id="metros" placeholder="Ej: 10">
+
+    <label>Electrodos utilizados:</label>
+    <input type="number" id="electrodos" placeholder="Ej: 5">
+
+    <label>Horas de trabajo:</label>
+    <input type="number" id="horas" placeholder="Ej: 3">
+
+    <button class="btn-calc" onclick="generarPresupuesto()">Calcular Total</button>
+
+    <div class="res" id="totalDisplay">Total: $0</div>
+
+    <button id="btnZap" class="btn-ws" onclick="enviarWhatsApp()">Enviar a WhatsApp</button>
+</div>
+
+<script>
+    // PRECIOS UNITARIOS (Cámbialos cuando quieras)
+    const PRECIO_METRO = 2500;
+    const PRECIO_ELECTRODO = 300;
+    const PRECIO_HORA = 6000;
+    let totalGlobal = 0;
+
+    function generarPresupuesto() {
+        const m = document.getElementById('metros').value || 0;
+        const e = document.getElementById('electrodos').value || 0;
+        const h = document.getElementById('horas').value || 0;
+
+        totalGlobal = (m * PRECIO_METRO) + (e * PRECIO_ELECTRODO) + (h * PRECIO_HORA);
+        
+        document.getElementById('totalDisplay').innerText = "Total: $" + totalGlobal.toLocaleString();
+        document.getElementById('btnZap').style.display = 'block';
+    }
+
+    function enviarWhatsApp() {
+        const m = document.getElementById('metros').value;
+        const h = document.getElementById('horas').value;
+        const mensaje = `*Presupuesto de Soldadura*%0A- Metros: ${m}m%0A- Horas: ${h}h%0A*Total estimado: $${totalGlobal}*`;
+        const tel = "5491100000000"; // Pon tu número aquí (con código de país)
+        
+        window.open(`https://wa.me/${tel}?text=${mensaje}`, '_blank');
+    }
+</script>
+
+</body>
+</html>
