@@ -105,17 +105,26 @@
         return total;
     }
 
-    function descargarPDF() {
+function descargarPDF() {
         const elemento = document.getElementById('presupuesto-area');
         const nombreCliente = document.getElementById('cliente').value || 'Cliente';
+        
+        // Configuraciones para que no salga en blanco en celulares
         const opciones = {
-            margin: 0.5,
+            margin: [0.2, 0.2, 0.2, 0.2], // Margen pequeño para que entre todo
             filename: `Presupuesto_Ezequiel_${nombreCliente}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            html2canvas: { 
+                scale: 2, // No le pongas 3 porque a veces el celu se traba
+                useCORS: true, 
+                letterRendering: true,
+                scrollY: 0 // Esto evita que si tienes scroll salga en blanco
+            },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
-        html2pdf().set(opciones).from(elemento).save();
+
+        // Forzamos un pequeño retraso para que el navegador "dibuje" bien la pantalla
+        html2pdf().set(opciones).from(elemento).toPdf().get('pdf').save();
     }
 
     function enviarWS() {
