@@ -3,65 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Soldadura</title>
+    <title>Ezequiel Palacios - Presupuestos</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; }
-        .card { background: white; max-width: 400px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { color: #333; text-align: center; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; margin-top: 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-calc { background-color: #007bff; color: white; }
-        .btn-ws { background-color: #25d366; color: white; display: none; margin-top: 10px; }
-        .res { margin-top: 20px; font-size: 1.2em; text-align: center; color: #28a745; font-weight: bold; }
+        :root { --verde: #2d5a27; --oscuro: #1a1a1a; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e0e0e0; margin: 0; padding: 10px; }
+        .invoice-card { background: white; max-width: 600px; margin: auto; border-top: 10px solid var(--verde); box-shadow: 0 4px 15px rgba(0,0,0,0.2); padding: 20px; border-radius: 5px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--verde); padding-bottom: 10px; }
+        .logo-text h1 { margin: 0; color: var(--oscuro); font-size: 22px; text-transform: uppercase; }
+        .logo-text p { margin: 0; color: var(--verde); font-weight: bold; letter-spacing: 2px; }
+        .contact-info { text-align: right; font-size: 12px; color: #555; }
+        h2 { text-align: center; background: var(--oscuro); color: white; padding: 5px; font-size: 16px; margin-top: 15px; }
+        .section-title { font-weight: bold; color: var(--verde); border-bottom: 1px solid #ddd; margin-top: 15px; display: flex; align-items: center; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        label { font-size: 12px; font-weight: bold; display: block; }
+        input, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 3px; box-sizing: border-box; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: var(--verde); color: white; padding: 8px; font-size: 13px; }
+        td { border: 1px solid #ddd; padding: 8px; }
+        .total-row { background: var(--oscuro); color: white; font-weight: bold; }
+        .btn-ws { background: #25d366; color: white; border: none; width: 100%; padding: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 20px; border-radius: 5px; }
+        .legales { font-size: 10px; color: #777; margin-top: 15px; line-height: 1.2; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>Presupuesto Soldadura</h2>
-    
-    <label>Metros de material (caños/perfil):</label>
-    <input type="number" id="metros" placeholder="Ej: 10">
+<div class="invoice-card">
+    <div class="header">
+        <div class="logo-text">
+            <h1>EZEQUIEL PALACIOS</h1>
+            <p>CARPINTERÍA METÁLICA</p>
+        </div>
+        <div class="contact-info">
+            📍 Comodoro Rivadavia<br>
+            📞 154431974
+        </div>
+    </div>
 
-    <label>Electrodos utilizados:</label>
-    <input type="number" id="electrodos" placeholder="Ej: 5">
+    <h2>PRESUPUESTO DE TRABAJO</h2>
 
-    <label>Horas de trabajo:</label>
-    <input type="number" id="horas" placeholder="Ej: 3">
+    <div class="section-title">📋 Datos del cliente</div>
+    <div class="grid">
+        <div><label>Nombre:</label><input type="text" id="cliente"></div>
+        <div><label>Teléfono:</label><input type="text" id="tel_cliente"></div>
+    </div>
 
-    <button class="btn-calc" onclick="generarPresupuesto()">Calcular Total</button>
+    <div class="section-title">⚙️ Detalle del trabajo</div>
+    <label>Descripción:</label>
+    <textarea id="descripcion" rows="2" placeholder="Ej: Reja para ventana 1.50x1.10..."></textarea>
 
-    <div class="res" id="totalDisplay">Total: $0</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Concepto</th>
+                <th>Monto ($)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Materiales</td><td><input type="number" id="mat" oninput="calc()"></td></tr>
+            <tr><td>Mano de obra</td><td><input type="number" id="mo" oninput="calc()"></td></tr>
+            <tr><td>Transporte</td><td><input type="number" id="trans" oninput="calc()"></td></tr>
+            <tr class="total-row">
+                <td>TOTAL</td>
+                <td id="total_final">$ 0</td>
+            </tr>
+        </tbody>
+    </table>
 
-    <button id="btnZap" class="btn-ws" onclick="enviarWhatsApp()">Enviar a WhatsApp</button>
+    <div class="section-title">📍 Condiciones</div>
+    <div class="grid">
+        <div><label>Tiempo estimado:</label><input type="text" id="tiempo" placeholder="Ej: 7 días"></div>
+        <div><label>Forma de pago:</label><input type="text" id="pago" placeholder="Ej: 50% adelanto"></div>
+    </div>
+
+    <div class="legales">
+        Este presupuesto tiene una <b>validez de 15 días</b>. Pasado ese plazo, los precios podrán ser actualizados sin previo aviso debido a variaciones en costos de materiales.
+    </div>
+
+    <button class="btn-ws" onclick="enviarWS()">ENVIAR POR WHATSAPP</button>
 </div>
 
 <script>
-    // PRECIOS UNITARIOS (Cámbialos cuando quieras)
-    const PRECIO_METRO = 2500;
-    const PRECIO_ELECTRODO = 300;
-    const PRECIO_HORA = 6000;
-    let totalGlobal = 0;
-
-    function generarPresupuesto() {
-        const m = document.getElementById('metros').value || 0;
-        const e = document.getElementById('electrodos').value || 0;
-        const h = document.getElementById('horas').value || 0;
-
-        totalGlobal = (m * PRECIO_METRO) + (e * PRECIO_ELECTRODO) + (h * PRECIO_HORA);
-        
-        document.getElementById('totalDisplay').innerText = "Total: $" + totalGlobal.toLocaleString();
-        document.getElementById('btnZap').style.display = 'block';
+    function calc() {
+        const mat = parseFloat(document.getElementById('mat').value) || 0;
+        const mo = parseFloat(document.getElementById('mo').value) || 0;
+        const trans = parseFloat(document.getElementById('trans').value) || 0;
+        const total = mat + mo + trans;
+        document.getElementById('total_final').innerText = "$ " + total.toLocaleString();
+        return total;
     }
 
-    function enviarWhatsApp() {
-        const m = document.getElementById('metros').value;
-        const h = document.getElementById('horas').value;
-        const mensaje = `*Presupuesto de Soldadura*%0A- Metros: ${m}m%0A- Horas: ${h}h%0A*Total estimado: $${totalGlobal}*`;
-        const tel = "5491100000000"; // Pon tu número aquí (con código de país)
+    function enviarWS() {
+        const cliente = document.getElementById('cliente').value;
+        const desc = document.getElementById('descripcion').value;
+        const total = calc();
+        const tiempo = document.getElementById('tiempo').value;
         
-        window.open(`https://wa.me/${tel}?text=${mensaje}`, '_blank');
+        const texto = `*PRESUPUESTO - EZEQUIEL PALACIOS*%0A%0A*Cliente:* ${cliente}%0A*Trabajo:* ${desc}%0A---%0A*TOTAL: $${total.toLocaleString()}*%0A---%0A*Tiempo:* ${tiempo}%0A*Validez:* 15 días.`;
+        
+        // Aquí puedes poner tu número si quieres que te llegue a ti, o dejarlo en blanco para elegir el contacto
+        window.open(`https://wa.me/?text=${texto}`, '_blank');
     }
 </script>
 
