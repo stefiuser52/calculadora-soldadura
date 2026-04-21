@@ -4,29 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ezequiel Palacios - Presupuestos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { --verde: #2d5a27; --oscuro: #1a1a1a; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #e0e0e0; margin: 0; padding: 10px; }
-        .invoice-card { background: white; max-width: 500px; margin: auto; border-top: 10px solid var(--verde); box-shadow: 0 4px 15px rgba(0,0,0,0.2); padding: 20px; border-radius: 5px; }
+        
+        /* Área que se convertirá en PDF */
+        #presupuesto-area { background: white; max-width: 500px; margin: auto; border-top: 10px solid var(--verde); box-shadow: 0 4px 15px rgba(0,0,0,0.2); padding: 20px; border-radius: 5px; }
+        
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--verde); padding-bottom: 10px; }
         .logo-text h1 { margin: 0; color: var(--oscuro); font-size: 20px; text-transform: uppercase; }
         .logo-text p { margin: 0; color: var(--verde); font-weight: bold; font-size: 12px; letter-spacing: 1px; }
         .contact-info { text-align: right; font-size: 11px; color: #555; }
+        
         h2 { text-align: center; background: var(--oscuro); color: white; padding: 8px; font-size: 14px; margin-top: 15px; border-radius: 3px; }
         .section-title { font-weight: bold; color: var(--verde); border-bottom: 1px solid #ddd; margin-top: 15px; margin-bottom: 5px; font-size: 14px; }
+        
         label { font-size: 12px; font-weight: bold; display: block; margin-top: 8px; }
         input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px; }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th { background: var(--verde); color: white; padding: 10px; font-size: 13px; text-align: left; }
-        td { border: 1px solid #ddd; padding: 5px; }
+        td { border: 1px solid #ddd; padding: 8px; }
         .total-row { background: var(--oscuro); color: white; font-weight: bold; font-size: 18px; }
-        .btn-ws { background: #25d366; color: white; border: none; width: 100%; padding: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 20px; border-radius: 5px; box-shadow: 0 4px 0 #1eac53; }
+
+        /* Estilo de los botones */
+        .contenedor-botones { max-width: 500px; margin: 20px auto; display: flex; gap: 10px; }
+        .btn { flex: 1; border: none; padding: 15px; font-weight: bold; font-size: 14px; cursor: pointer; border-radius: 5px; color: white; text-transform: uppercase; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
+        .btn:active { transform: translateY(2px); box-shadow: none; }
+        .btn-ws { background: #25d366; }
+        .btn-pdf { background: #007bff; }
+        
         .legales { font-size: 11px; color: #777; margin-top: 15px; line-height: 1.3; text-align: center; font-style: italic; }
     </style>
 </head>
 <body>
 
-<div class="invoice-card">
+<div id="presupuesto-area">
     <div class="header">
         <div class="logo-text">
             <h1>EZEQUIEL PALACIOS</h1>
@@ -44,7 +58,7 @@
     <input type="text" id="cliente" placeholder="Nombre del cliente">
 
     <div class="section-title">⚙️ Detalle del Trabajo</div>
-    <textarea id="descripcion" rows="2" placeholder="Ej: Reja para ventana..."></textarea>
+    <textarea id="descripcion" rows="2" placeholder="Ej: Reja para ventana 1.5x1.2..."></textarea>
     
     <label>Otros detalles extras:</label>
     <textarea id="otros_detalles" rows="2" placeholder="Ej: Pintura antióxido, colocación, etc."></textarea>
@@ -61,8 +75,8 @@
             <tr><td>Mano de obra</td><td><input type="number" id="mo" oninput="calc()" placeholder="0"></td></tr>
             <tr><td>Gastos Extras</td><td><input type="number" id="trans" oninput="calc()" placeholder="0"></td></tr>
             <tr class="total-row">
-                <td style="padding: 10px;">TOTAL</td>
-                <td id="total_final" style="padding: 10px; text-align: right;">$ 0</td>
+                <td>TOTAL</td>
+                <td id="total_final" style="text-align: right;">$ 0</td>
             </tr>
         </tbody>
     </table>
@@ -72,10 +86,13 @@
     <input type="text" id="tiempo" placeholder="Ej: 7 días hábiles">
 
     <div class="legales">
-        "Este presupuesto tiene una validez de 15 días."
+        "Este presupuesto tiene una validez de 15 días. Una vez aceptado, se requiere seña del 50%."
     </div>
+</div>
 
-    <button class="btn-ws" onclick="enviarWS()">ENVIAR POR WHATSAPP</button>
+<div class="contenedor-botones">
+    <button class="btn btn-pdf" onclick="descargarPDF()">📥 PDF</button>
+    <button class="btn btn-ws" onclick="enviarWS()">🟢 WhatsApp</button>
 </div>
 
 <script>
@@ -88,9 +105,22 @@
         return total;
     }
 
+    function descargarPDF() {
+        const elemento = document.getElementById('presupuesto-area');
+        const nombreCliente = document.getElementById('cliente').value || 'Cliente';
+        const opciones = {
+            margin: 0.5,
+            filename: `Presupuesto_Ezequiel_${nombreCliente}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opciones).from(elemento).save();
+    }
+
     function enviarWS() {
         const cliente = document.getElementById('cliente').value || "Cliente";
-        const desc = document.getElementById('descripcion').value || "Servicio de soldadura";
+        const desc = document.getElementById('descripcion').value || "Soldadura";
         const otros = document.getElementById('otros_detalles').value || "Ninguno";
         const mat = parseFloat(document.getElementById('mat').value) || 0;
         const mo = parseFloat(document.getElementById('mo').value) || 0;
@@ -99,23 +129,15 @@
         const tiempo = document.getElementById('tiempo').value || "A convenir";
         
         const texto = `*PRESUPUESTO - EZEQUIEL PALACIOS*%0A` +
-                      `*Carpintería Metálica*%0A%0A` +
                       `*CLIENTE:* ${cliente}%0A` +
-                      `*TRABAJO:* ${desc}%0A` +
-                      `*DETALLES:* ${otros}%0A%0A` +
-                      `*--- DETALLE DE COSTOS ---*%0A` +
+                      `*TRABAJO:* ${desc}%0A%0A` +
+                      `*DETALLE DE COSTOS:*%0A` +
                       `- Materiales: $${mat.toLocaleString('es-AR')}%0A` +
                       `- Mano de obra: $${mo.toLocaleString('es-AR')}%0A` +
                       `- Gastos Extras: $${trans.toLocaleString('es-AR')}%0A` +
-                      `*--------------------------*%0A` +
-                      `*TOTAL: $${total.toLocaleString('es-AR')}*%0A` +
-                      `*--------------------------*%0A%0A` +
-                      `*Tiempo de entrega:* ${tiempo}%0A` +
-                      `*Validez:* 15 días.%0A%0A` +
-                      `*CONTACTO:*%0A` +
-                      `👤 Ezequiel Palacios%0A` +
-                      `📞 2974431974%0A` +
-                      `📍 Comodoro Rivadavia`;
+                      `*TOTAL: $${total.toLocaleString('es-AR')}*%0A%0A` +
+                      `*Entrega:* ${tiempo}%0A%0A` +
+                      `📞 2974431974`;
         
         window.open(`https://wa.me/?text=${texto}`, '_blank');
     }
