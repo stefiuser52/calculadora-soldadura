@@ -3,51 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ezequiel Palacios - Presupuestos</title>
+    <title>Ezequiel Palacios - Presupuestos Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root { --verde: #2d5a27; --oscuro: #1a1a1a; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: #e0e0e0; margin: 0; padding: 10px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e0e0e0; margin: 0; padding: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         
-        #presupuesto-area { 
-            background: white; padding: 30px; border-top: 10px solid var(--verde); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-radius: 5px; width: 100%; box-sizing: border-box;
-        }
-        
+        /* === ESTILOS PARA LA PANTALLA DEL CELULAR === */
+        #interface-cliente { background: white; max-width: 500px; margin: auto; border-top: 10px solid var(--verde); box-shadow: 0 4px 15px rgba(0,0,0,0.2); padding: 20px; border-radius: 5px; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--verde); padding-bottom: 10px; }
         .logo-text h1 { margin: 0; color: var(--oscuro); font-size: 20px; text-transform: uppercase; }
         .logo-text p { margin: 0; color: var(--verde); font-weight: bold; font-size: 12px; letter-spacing: 1px; }
         .contact-info { text-align: right; font-size: 11px; color: #555; }
-        
         h2 { text-align: center; background: var(--oscuro); color: white; padding: 8px; font-size: 14px; margin-top: 15px; border-radius: 3px; }
         .section-title { font-weight: bold; color: var(--verde); border-bottom: 1px solid #ddd; margin-top: 15px; margin-bottom: 5px; font-size: 14px; }
-        
         label { font-size: 12px; font-weight: bold; display: block; margin-top: 8px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px; }
-        
-        /* Estilo para que el PDF no muestre los cuadros de input */
-        .pdf-text { display: none; font-size: 15px; padding: 10px 0; border-bottom: 1px dashed #ccc; min-height: 20px; }
-
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px; margin-bottom: 5px; }
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th { background: var(--verde); color: white; padding: 10px; font-size: 13px; text-align: left; }
-        td { border: 1px solid #ddd; padding: 10px; }
+        td { border: 1px solid #ddd; padding: 8px; }
         .total-row { background: var(--oscuro); color: white; font-weight: bold; font-size: 18px; }
-
-        .contenedor-botones { max-width: 500px; margin: 20px auto; display: flex; gap: 10px; }
-        .btn { flex: 1; border: none; padding: 15px; font-weight: bold; font-size: 14px; cursor: pointer; border-radius: 5px; color: white; }
+        .contenedor-botones { max-width: 500px; margin: 20px auto; display: flex; gap: 10px; padding: 0 10px; }
+        .btn { flex: 1; border: none; padding: 15px; font-weight: bold; font-size: 14px; cursor: pointer; border-radius: 5px; color: white; text-transform: uppercase; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
+        .btn:active { transform: translateY(2px); box-shadow: none; }
         .btn-ws { background: #25d366; }
         .btn-pdf { background: #007bff; }
-        
-        .legales { font-size: 11px; color: #777; margin-top: 20px; text-align: center; font-style: italic; }
+        .legales { font-size: 11px; color: #777; margin-top: 15px; text-align: center; font-style: italic; }
 
-        /* Clase especial para ocultar inputs al generar PDF */
-        .ocultar-para-pdf input, .ocultar-para-pdf textarea { display: none; }
-        .ocultar-para-pdf .pdf-text { display: block; }
+        /* === ESTILOS EXCLUSIVOS PARA EL PDF (OCULTOS EN PANTALLA) === */
+        #plantilla-pdf { display: none; width: 210mm; height: 297mm; background: white; padding: 20mm; box-sizing: border-box; position: absolute; left: -9999px; top: -9999px; }
+        
+        /* Estilos de impresión para forzar fondos y evitar cortes */
+        @media print {
+            body { background: white; padding: 0; }
+            #interface-cliente, .contenedor-botones { display: none !important; }
+            #plantilla-pdf { display: block !important; position: static; margin: 0; box-shadow: none; }
+            .header-pdf { border-bottom: 4px solid #2d5a27 !important; }
+            .section-title-pdf { color: #2d5a27 !important; border-bottom: 2px solid #ddd !important; }
+            th-pdf { background-color: #2d5a27 !important; color: white !important; }
+            .total-row-pdf { background-color: #1a1a1a !important; color: white !important; }
+            h2-pdf { background-color: #1a1a1a !important; color: white !important; }
+        }
     </style>
 </head>
 <body>
 
-<div id="presupuesto-area">
+<div id="interface-cliente">
     <div class="header">
         <div class="logo-text">
             <h1>EZEQUIEL PALACIOS</h1>
@@ -58,52 +59,62 @@
             📞 297 4431974
         </div>
     </div>
-
     <h2>PRESUPUESTO DE TRABAJO</h2>
-
     <div class="section-title">📋 Datos del Cliente</div>
     <input type="text" id="cliente" placeholder="Nombre del cliente">
-    <div id="t-cliente" class="pdf-text"></div>
-
     <div class="section-title">⚙️ Detalle del Trabajo</div>
     <textarea id="descripcion" rows="2" placeholder="Ej: Reja para ventana..."></textarea>
-    <div id="t-descripcion" class="pdf-text"></div>
-    
     <label>Otros detalles extras:</label>
     <textarea id="otros_detalles" rows="2" placeholder="Ej: Pintura antióxido, etc."></textarea>
-    <div id="t-otros" class="pdf-text"></div>
-
     <table>
-        <thead>
-            <tr>
-                <th>Concepto</th>
-                <th>Monto ($)</th>
-            </tr>
-        </thead>
+        <thead><tr><th>Concepto</th><th>Monto ($)</th></tr></thead>
         <tbody>
-            <tr><td>Materiales</td><td id="c-mat"><input type="number" id="mat" oninput="calc()" placeholder="0"><span class="pdf-text" id="t-mat"></span></td></tr>
-            <tr><td>Mano de obra</td><td id="c-mo"><input type="number" id="mo" oninput="calc()" placeholder="0"><span class="pdf-text" id="t-mo"></span></td></tr>
-            <tr><td>Gastos Extras</td><td id="c-trans"><input type="number" id="trans" oninput="calc()" placeholder="0"><span class="pdf-text" id="t-trans"></span></td></tr>
-            <tr class="total-row">
-                <td>TOTAL</td>
-                <td id="total_final" style="text-align: right;">$ 0</td>
-            </tr>
+            <tr><td>Materiales</td><td><input type="number" id="mat" oninput="calc()" placeholder="0"></td></tr>
+            <tr><td>Mano de obra</td><td><input type="number" id="mo" oninput="calc()" placeholder="0"></td></tr>
+            <tr><td>Gastos Extras</td><td><input type="number" id="trans" oninput="calc()" placeholder="0"></td></tr>
+            <tr class="total-row"><td>TOTAL</td><td id="total_final" style="text-align: right;">$ 0</td></tr>
         </tbody>
     </table>
-
     <div class="section-title">📍 Condiciones</div>
     <label>Tiempo estimado entrega:</label>
     <input type="text" id="tiempo" placeholder="Ej: 7 días hábiles">
-    <div id="t-tiempo" class="pdf-text"></div>
-
-    <div class="legales">
-        "Este presupuesto tiene una validez de 15 días. Una vez aceptado, se requiere seña del 50% para iniciar."
-    </div>
+    <div class="legales">"Válido por 15 días. Se requiere 50% de seña."</div>
 </div>
 
 <div class="contenedor-botones">
-    <button class="btn btn-pdf" onclick="descargarPDF()">📥 PDF</button>
+    <button class="btn btn-pdf" onclick="descargarPDF()">📥 PDF PRO</button>
     <button class="btn btn-ws" onclick="enviarWS()">🟢 WhatsApp</button>
+</div>
+
+<div id="plantilla-pdf">
+    <div class="header-pdf" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #2d5a27; padding-bottom: 15px; margin-bottom: 20px;">
+        <div class="logo-text-pdf">
+            <h1 style="margin: 0; color: #1a1a1a; font-size: 28px; text-transform: uppercase;">EZEQUIEL PALACIOS</h1>
+            <p style="margin: 0; color: #2d5a27; font-weight: bold; font-size: 14px; letter-spacing: 1px;">CARPINTERÍA METÁLICA</p>
+        </div>
+        <div class="contact-info-pdf" style="text-align: right; font-size: 12px; color: #555; line-height: 1.5;">
+            📍 Comodoro Rivadavia<br>
+            📞 297 4431974
+        </div>
+    </div>
+    <h2-pdf style="text-align: center; background: #1a1a1a; color: white; padding: 10px; font-size: 18px; margin-top: 20px; border-radius: 4px; display: block;">PRESUPUESTO DE TRABAJO</h2-pdf>
+    <div class="section-title-pdf" style="font-weight: bold; color: #2d5a27; border-bottom: 2px solid #ddd; margin-top: 25px; margin-bottom: 10px; font-size: 16px;">📋 Datos del Cliente</div>
+    <p style="font-size: 15px; margin: 5px 0;"><b>Cliente:</b> <span id="pdf-val-cliente"></span></p>
+    <div class="section-title-pdf" style="font-weight: bold; color: #2d5a27; border-bottom: 2px solid #ddd; margin-top: 25px; margin-bottom: 10px; font-size: 16px;">⚙️ Detalle del Trabajo</div>
+    <p style="font-size: 15px; margin: 5px 0;"><b>Trabajo principal:</b> <span id="pdf-val-desc"></span></p>
+    <p style="font-size: 15px; margin: 5px 0;"><b>Detalles extras:</b> <span id="pdf-val-otros"></span></p>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 25px; font-size: 15px;">
+        <thead><tr><th-pdf style="background-color: #2d5a27; color: white; padding: 12px; text-align: left;">Concepto</th-pdf><th-pdf style="background-color: #2d5a27; color: white; padding: 12px; text-align: right;">Monto ($)</th-pdf></tr></thead>
+        <tbody>
+            <tr><td style="border: 1px solid #ddd; padding: 12px;">Materiales</td><td style="border: 1px solid #ddd; padding: 12px; text-align: right;" id="pdf-val-mat"></td></tr>
+            <tr><td style="border: 1px solid #ddd; padding: 12px;">Mano de obra</td><td style="border: 1px solid #ddd; padding: 12px; text-align: right;" id="pdf-val-mo"></td></tr>
+            <tr><td style="border: 1px solid #ddd; padding: 12px;">Gastos Extras</td><td style="border: 1px solid #ddd; padding: 12px; text-align: right;" id="pdf-val-trans"></td></tr>
+            <tr class="total-row-pdf" style="background-color: #1a1a1a; color: white; font-weight: bold; font-size: 20px;"><td style="padding: 15px;">TOTAL</td><td style="padding: 15px; text-align: right;" id="pdf-val-total"></td></tr>
+        </tbody>
+    </table>
+    <div class="section-title-pdf" style="font-weight: bold; color: #2d5a27; border-bottom: 2px solid #ddd; margin-top: 25px; margin-bottom: 10px; font-size: 16px;">📍 Condiciones</div>
+    <p style="font-size: 15px; margin: 5px 0;"><b>Tiempo estimado entrega:</b> <span id="pdf-val-tiempo"></span></p>
+    <div class="legales" style="font-size: 12px; color: #777; margin-top: 30px; text-align: center; font-style: italic; border-top: 1px solid #eee; padding-top: 10px;">"Este presupuesto tiene una validez de 15 días. Una vez aceptado, se requiere seña del 50% para iniciar el trabajo."</div>
 </div>
 
 <script>
@@ -117,35 +128,57 @@
     }
 
     function descargarPDF() {
-        const area = document.getElementById('presupuesto-area');
+        // 1. Llenar la plantilla oculta con los datos actuales
+        document.getElementById('pdf-val-cliente').innerText = document.getElementById('cliente').value || '---';
+        document.getElementById('pdf-val-desc').innerText = document.getElementById('descripcion').value || '---';
+        document.getElementById('pdf-val-otros').innerText = document.getElementById('otros_detalles').value || '---';
         
-        // Pasamos los valores de los inputs a los textos para el PDF
-        document.getElementById('t-cliente').innerText = document.getElementById('cliente').value;
-        document.getElementById('t-descripcion').innerText = document.getElementById('descripcion').value;
-        document.getElementById('t-otros').innerText = document.getElementById('otros_detalles').value;
-        document.getElementById('t-mat').innerText = "$ " + (parseFloat(document.getElementById('mat').value) || 0).toLocaleString('es-AR');
-        document.getElementById('t-mo').innerText = "$ " + (parseFloat(document.getElementById('mo').value) || 0).toLocaleString('es-AR');
-        document.getElementById('t-trans').innerText = "$ " + (parseFloat(document.getElementById('trans').value) || 0).toLocaleString('es-AR');
-        document.getElementById('t-tiempo').innerText = document.getElementById('tiempo').value;
+        const mat = parseFloat(document.getElementById('mat').value) || 0;
+        const mo = parseFloat(document.getElementById('mo').value) || 0;
+        const trans = parseFloat(document.getElementById('trans').value) || 0;
+        const total = mat + mo + trans;
 
-        area.classList.add('ocultar-para-pdf');
+        document.getElementById('pdf-val-mat').innerText = "$ " + mat.toLocaleString('es-AR');
+        document.getElementById('pdf-val-mo').innerText = "$ " + mo.toLocaleString('es-AR');
+        document.getElementById('pdf-val-trans').innerText = "$ " + trans.toLocaleString('es-AR');
+        document.getElementById('pdf-val-total').innerText = "$ " + total.toLocaleString('es-AR');
+        document.getElementById('pdf-val-tiempo').innerText = document.getElementById('tiempo').value || 'A convenir';
 
+        // 2. Configurar y generar el PDF usando SOLO la plantilla oculta
+        const elementoPDF = document.getElementById('plantilla-pdf');
+        const nombreCliente = document.getElementById('cliente').value || 'Cliente';
+        
         const opciones = {
-            margin: 0.3,
-            filename: `Presupuesto_${document.getElementById('cliente').value || 'Cliente'}.pdf`,
+            margin: 0, // Sin márgenes para usar todo el ancho A4
+            filename: `Presupuesto_Ezequiel_${nombreCliente}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            html2canvas: { 
+                scale: 2, // Calidad alta
+                useCORS: true, 
+                logging: false,
+                width: 793, // Ancho exacto A4 en pixeles a 96dpi
+                height: 1122 // Alto exacto A4 en pixeles a 96dpi
+            },
+            jsPDF: { unit: 'px', format: [793, 1122], orientation: 'portrait' } // Forzamos tamaño A4 exacto
         };
 
-        html2pdf().set(opciones).from(area).save().then(() => {
-            area.classList.remove('ocultar-para-pdf');
-        });
+        // Ejecutar la generación
+        html2pdf().set(opciones).from(elementoPDF).save();
     }
 
     function enviarWS() {
+        // Mantenemos el mensaje de WhatsApp detallado
+        const cliente = document.getElementById('cliente').value || "Cliente";
+        const desc = document.getElementById('descripcion').value || "Servicio de soldadura";
+        const otros = document.getElementById('otros_detalles').value || "Ninguno";
+        const mat = parseFloat(document.getElementById('mat').value) || 0;
+        const mo = parseFloat(document.getElementById('mo').value) || 0;
+        const trans = parseFloat(document.getElementById('trans').value) || 0;
         const total = calc();
-        const texto = `*PRESUPUESTO - EZEQUIEL PALACIOS*%0A*Cliente:* ${document.getElementById('cliente').value}%0A*TOTAL: $${total.toLocaleString('es-AR')}*%0A%0A_Te envío el PDF adjunto._`;
+        const tiempo = document.getElementById('tiempo').value || "A convenir";
+        
+        const texto = `*PRESUPUESTO - EZEQUIEL PALACIOS*%0A*Carpintería Metálica*%0A%0A*CLIENTE:* ${cliente}%0A*TRABAJO:* ${desc}%0A*DETALLES:* ${otros}%0A%0A*--- DETALLE DE COSTOS ---*%0A- Materiales: $${mat.toLocaleString('es-AR')}%0A- Mano de obra: $${mo.toLocaleString('es-AR')}%0A- Gastos Extras: $${trans.toLocaleString('es-AR')}%0A*--------------------------*%0A*TOTAL: $${total.toLocaleString('es-AR')}*%0A*--------------------------*%0A%0A*Tiempo de entrega:* ${tiempo}%0A*Validez:* 15 días.%0A%0A👤 Ezequiel Palacios%0A📞 2974431974%0A📍 Comodoro Rivadavia`;
+        
         window.open(`https://wa.me/?text=${texto}`, '_blank');
     }
 </script>
